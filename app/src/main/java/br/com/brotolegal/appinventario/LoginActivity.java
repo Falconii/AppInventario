@@ -95,7 +95,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
 
         //Teste de alteração para o git
+
+        //Mais Uma Alteração
     }
+
 
     private void populateAutoComplete() {
         if (!mayRequestContacts()) {
