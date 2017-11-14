@@ -43,7 +43,7 @@
 
                 <TextView
                     android:id="@+id/txt_cor_400"
-                    android:layout_width="match_parent"
+                    android:layout_width="100dp"
                     android:layout_height="25dp"
                     android:gravity="left|center_vertical|center_horizontal"
                     android:text=""
@@ -96,6 +96,10 @@
                     android:text="02726020201-FEIJAO BROTO LEGAL 30X1 - FD"
                     android:textColor="@color/red"
                     android:textSize="18sp"
+                    android:ellipsize="end"
+                    android:scrollHorizontally = "true"
+                    android:minLines = "1"
+                    android:maxLines = "1"
 
                     />
             </TableRow>
@@ -113,6 +117,7 @@
                     android:gravity="center_vertical|center_horizontal"
                     android:text="QTD"
                     android:textColor="@color/black"
+                    android:background="@drawable/customcategoria"
                     />
             </TableRow>
 

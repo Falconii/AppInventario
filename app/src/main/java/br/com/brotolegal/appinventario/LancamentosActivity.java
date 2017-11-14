@@ -1,16 +1,15 @@
 package br.com.brotolegal.appinventario;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
 import android.text.InputType;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -18,28 +17,27 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.RadioButton;
-import android.widget.Spinner;
-import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import Models.Lancamento;
-import Models.NoData;
-import Models.Usuario;
+import br.com.brotolegal.appinventario.Models.Etiqueta;
+import br.com.brotolegal.appinventario.Models.Lancamento;
+import br.com.brotolegal.appinventario.Models.NoData;
+import br.com.brotolegal.appinventario.Models.Usuario;
 
 public class LancamentosActivity extends AppCompatActivity {
 
@@ -53,15 +51,17 @@ public class LancamentosActivity extends AppCompatActivity {
 
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lancamentos);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-
         toolbar.setTitle("LANÇAMENTOS DO INVENTÁRIO");
         toolbar.setSubtitle("20/12/2017");
         toolbar.setLogo(R.mipmap.ic_launcher);
+
+        final Activity activity = this;
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -69,13 +69,20 @@ public class LancamentosActivity extends AppCompatActivity {
 
         lv = (ListView) findViewById(R.id.lv_lancamentos_400);
 
-        fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = (FloatingActionButton) findViewById(R.id.plus_inventario);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent it = new Intent(LancamentosActivity.this,leituraActivity.class);
 
-                startActivity(it);
+                IntentIntegrator integrator =  new IntentIntegrator(activity);
+                integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
+                integrator.setPrompt("Aponte Para Etiqueta");
+                integrator.setCameraId(0);
+                integrator.setBeepEnabled(true);
+                integrator.setBarcodeImageEnabled(false);
+                integrator.initiateScan();
+
+
             }
         });
 
@@ -169,9 +176,24 @@ public class LancamentosActivity extends AppCompatActivity {
 
             lsLancamentos.add("CABEC");
 
-            lsLancamentos.add(new Lancamento("000100","20171113","027260201","01","0","01","PRETA",new Usuario(),"20171113 08:30","0",0f,"FEIJÃO BROTO LEGAL 30X1"));
+            lsLancamentos.add(new Lancamento("000100","20171113","027260201","01","0","01","#FFC0CB",new Usuario(),"20171113 08:30","",0f,"FEIJÃO BROTO LEGAL 30X1"));
 
-            lsLancamentos.add(new Lancamento("000101","20171113","027270201","01","0","01","AZUL",new Usuario(),"20171113 09:30","0",0f,"FEIJÃO BROTO LEGAL 10X1"));
+            lsLancamentos.add(new Lancamento("000101","20171113","027270201","01","0","01","#14649F",new Usuario(),"20171113 09:30","",0f,"FEIJÃO BROTO LEGAL 10X1"));
+
+            lsLancamentos.add(new Lancamento("000102","20171113","027280201","01","0","01","#FF0033",new Usuario(),"20171113 09:30","",0f,"FEIJÃO BROTO LEGAL 60X1"));
+
+            lsLancamentos.add(new Lancamento("000103","20171113","027280201","01","0","01","#FF0033",new Usuario(),"20171113 09:30","",0f,"FEIJÃO BROTO LEGAL 60X1"));
+
+            lsLancamentos.add(new Lancamento("000104","20171113","027280201","01","0","01","#FF0033",new Usuario(),"20171113 09:30","",0f,"FEIJÃO BROTO LEGAL 60X1"));
+
+            lsLancamentos.add(new Lancamento("000105","20171113","027280201","01","0","01","#FF0033",new Usuario(),"20171113 09:30","",0f,"FEIJÃO BROTO LEGAL 60X1"));
+
+            lsLancamentos.add(new Lancamento("000106","20171113","027280201","01","0","01","#FF0033",new Usuario(),"20171113 09:30","",0f,"FEIJÃO BROTO LEGAL 60X1"));
+
+            lsLancamentos.add(new Lancamento("000107","20171113","027280201","01","0","01","#FF0033",new Usuario(),"20171113 09:30","",0f,"FEIJÃO BROTO LEGAL 60X1"));
+
+            lsLancamentos.add(new Lancamento("000108","20171113","027280201","01","0","01","#FF0033",new Usuario(),"20171113 09:30","",0f,"FEIJÃO BROTO LEGAL 60X1"));
+
 
             adapter = new Adapter(LancamentosActivity.this,lsLancamentos);
 
@@ -191,11 +213,37 @@ public class LancamentosActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        Boolean refresh = false;
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode,resultCode,data);
 
-        if (resultCode == 1 && requestCode == HelpInformation.AgendamentosIrregulares) {
+        if (result != null){
+
+            if (result.getContents() == null){
+
+                toast("Leitura Cancelada !!!");
+
+            } else {
+
+                try {
+
+                    toast(result.getContents());
+
+                    Etiqueta et = new Gson().fromJson(result.getContents(), Etiqueta.class);
+
+                    adapter.baixaInventario(et);
+
+                } catch (Exception e){
+
+                    toast(e.getMessage());
+
+                }
+            }
+
+        } else {
+
+            super.onActivityResult(requestCode,resultCode,data);
 
         }
+
     }
 
     private  class Adapter extends BaseAdapter
@@ -237,8 +285,6 @@ public class LancamentosActivity extends AppCompatActivity {
                 if (obj instanceof Lancamento) {
 
                     qtd++;
-
-                    break;
 
                 }
 
@@ -331,6 +377,50 @@ public class LancamentosActivity extends AppCompatActivity {
 
         }
 
+        public void baixaInventario(Etiqueta et){
+
+            int index = 0;
+
+            Boolean lOk = false;
+
+            for(Object obj : lsObjetos){
+
+                if (obj instanceof Lancamento) {
+
+                    if (    ((Lancamento) obj).getEtiqueta().equals(et.getEtiqueta()) &&
+                            ((Lancamento) obj).getContagem().equals(et.getContagem()) &&
+                            ((Lancamento) obj).getCodProduto().equals(et.getCodpro())   &&
+                            ((Lancamento) obj).getArmazem().equals(et.getArmazen())
+                            ){
+
+
+                        lOk = true;
+
+                        deleteitem(index);
+
+                        notifyDataSetChanged();
+
+                        break;
+                    }
+
+                }
+
+                index++;
+
+            }
+
+            if (lOk){
+
+                toast("Produto Inventariodo Com Sucesso...");
+
+            } else {
+
+                toast("Produto Não Inventariado...");
+
+            }
+        }
+
+
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
 
@@ -391,11 +481,20 @@ public class LancamentosActivity extends AppCompatActivity {
                         TextView txt_produto_400      = (TextView) convertView.findViewById(R.id.txt_produto_400);
                         TextView txt_qtd_400          = (TextView) convertView.findViewById(R.id.txt_qtd_400);
 
-                        txt_nroetiqueta_400.setText(obj.getData());
+                        txt_nroetiqueta_400.setText(obj.getEtiqueta());
+                        try {
 
+                            txt_cor_400.setBackgroundColor(Color.parseColor(obj.getCor()));
+
+                        } catch (Exception e){
+
+                            txt_cor_400.setBackgroundColor(Color.WHITE);
+
+                            txt_cor_400.setText("Sem Cor Definida");
+                        }
                         txt_armazem_400.setText("Armazém: "+obj.getArmazem());
                         txt_contagem_400.setText("Contagem: "+obj.getContagem());
-                        txt_produto_400.setText(obj.getCodProduto());
+                        txt_produto_400.setText(obj.getDescricaoProduto());
 
                         txt_qtd_400.setOnClickListener(new ClickAgenda(context,obj,pos));
 
@@ -472,34 +571,10 @@ public class LancamentosActivity extends AppCompatActivity {
 
             final EditText campo = (EditText) dialog.findViewById(R.id.edit_campo_118);
 
-            final TextView preco = (TextView) dialog.findViewById(R.id.txt_preco_118);
-
-            preco.setOnClickListener(new View.OnClickListener() {
-
-                public void onClick(View v) {
-
-                    Float value = 0f;
-
-                    try {
-
-                        value = Float.valueOf(preco.getText().toString().replaceAll(",", "."));
-
-                    } catch (Exception e) {
-
-                        value = 0f;
-
-                    }
-
-                    adapter.setitem(pos,value);
-
-
-                }
-            });
-
 
             campo.setRawInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
 
-            campo.setText(format_04.format(obj.getQtd()));
+            campo.setText("");
 
             final Button confirmar    = (Button) dialog.findViewById(R.id.bt_confirma_118);
             final Button cancelar     = (Button) dialog.findViewById(R.id.bt_cancela_118);
@@ -507,6 +582,9 @@ public class LancamentosActivity extends AppCompatActivity {
             cancelar.setOnClickListener(new View.OnClickListener() {
 
                 public void onClick(View v) {
+
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(campo.getWindowToken(), 0);
 
                     dialog.dismiss();
 
@@ -523,7 +601,11 @@ public class LancamentosActivity extends AppCompatActivity {
 
                         Float value = Float.parseFloat(campo.getText().toString().trim());
 
-                        adapter.setitem(pos,value);
+                        adapter.deleteitem(pos);
+
+                        InputMethodManager imm = (InputMethodManager)getSystemService(
+                                Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(campo.getWindowToken(), 0);
 
 
                     } catch  (Exception e){
@@ -548,6 +630,9 @@ public class LancamentosActivity extends AppCompatActivity {
 
             });
 
+            campo.requestFocus();
+            InputMethodManager imm = (InputMethodManager)   getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
             dialog.show();
 
         }

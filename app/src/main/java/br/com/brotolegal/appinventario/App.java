@@ -1,4 +1,4 @@
-package App;
+package br.com.brotolegal.appinventario;
 
 import android.app.Application;
 import android.content.Context;
@@ -13,8 +13,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import Models.Usuario;
-import br.com.brotolegal.appinventario.HelpInformation;
+import br.com.brotolegal.appinventario.Models.Usuario;
 
 
 /**

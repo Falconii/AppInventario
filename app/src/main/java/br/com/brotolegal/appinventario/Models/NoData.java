@@ -1,4 +1,4 @@
-package Models;
+package br.com.brotolegal.appinventario.Models;
 
 /**
  * Created by Falconi on 26/11/2015.
