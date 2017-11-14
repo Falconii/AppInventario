@@ -18,9 +18,10 @@ public class Lancamento {
     private Usuario usuario;
     private String  dataHora;
     private String  inventariado;
+    private Float   qtd;
+    private String  descricaoProduto;
 
-
-    public Lancamento(String etiqueta, String data, String codProduto, String armazem, String status, String contagem, String cor, Usuario usuario, String dataHora, String inventariado) {
+    public Lancamento(String etiqueta, String data, String codProduto, String armazem, String status, String contagem, String cor, Usuario usuario, String dataHora, String inventariado, Float qtd, String descricaoProduto) {
         this.etiqueta = etiqueta;
         this.data = data;
         this.codProduto = codProduto;
@@ -31,6 +32,8 @@ public class Lancamento {
         this.usuario = usuario;
         this.dataHora = dataHora;
         this.inventariado = inventariado;
+        this.qtd = qtd;
+        this.descricaoProduto = descricaoProduto;
     }
 
     public String getEtiqueta() {
@@ -111,5 +114,21 @@ public class Lancamento {
 
     public void setInventariado(String inventariado) {
         this.inventariado = inventariado;
+    }
+
+    public Float getQtd() {
+        return qtd;
+    }
+
+    public void setQtd(Float qtd) {
+        this.qtd = qtd;
+    }
+
+    public String getDescricaoProduto() {
+        return descricaoProduto;
+    }
+
+    public void setDescricaoProduto(String descricaoProduto) {
+        this.descricaoProduto = descricaoProduto;
     }
 }
